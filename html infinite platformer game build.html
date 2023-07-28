@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Infinite Platformer Game</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+    }
+    
+    canvas {
+      display: block;
+    }
+    
+    #player {
+      position: absolute;
+      left: 50px;
+      bottom: 0;
+      width: 50px;
+      height: 50px;
+      background-color: blue;
+    }
+    
+    .platform {
+      position: absolute;
+      width: 200px;
+      height: 20px;
+      background-color: gray;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="canvas" width="800" height="600"></canvas>
+  <div id="player"></div>
+  
+  <script>
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    
+    const player = document.getElementById('player');
+    let playerX = 50;
+    let playerY = 550;
+    let playerSpeedX = 0;
+    let playerSpeedY = 0;
+    let onGround = false;
+    
+    const platforms = [];
+    platforms.push({ x: 0, y: 500 });
+    
+    let platformSpeed = 5;
+    
+    function createPlatform() {
+      const lastPlatform = platforms[platforms.length - 1];
+      const minWidth = 100;
+      const maxWidth = 300;
+      const width = Math.floor(Math.random() * (maxWidth - minWidth + 1) + minWidth);
+      const minGap = 100;
+      const maxGap = 200;
+      const gap = Math.floor(Math.random() * (maxGap - minGap + 1) + minGap);
+      
+      const newPlatform = {
+        x: lastPlatform.x + lastPlatform.width + gap,
+        y: lastPlatform.y - Math.floor(Math.random() * 100),
+        width: width
+      };
+      
+      platforms.push(newPlatform);
+    }
+    
+    function movePlatforms() {
+      platforms.forEach(platform => {
+        platform.x -= platformSpeed;
+        
+        if (platform.x + platform.width < 0) {
+          platforms.shift();
+        }
+      });
+    }
+    
+    function drawPlatforms() {
+      platforms.forEach(platform => {
+        ctx.fillStyle = 'gray';
+        ctx.fillRect(platform.x, platform.y, platform.width, 20);
+      });
+    }
+    
+    function movePlayer() {
+      if (playerX + playerSpeedX > 0 && playerX + playerSpeedX < canvas.width - player.offsetWidth) {
+        playerX += playerSpeedX;
+      }
+      
+      if (playerY + playerSpeedY > 0 && playerY + playerSpeedY < canvas.height - player.offsetHeight) {
+        playerY += playerSpeedY;
+      }
+      
+      player.style.left = playerX + 'px';
+      player.style.bottom = playerY + 'px';
+    }
+    
+    document.addEventListener('keydown', event => {
+      if (event.code === 'ArrowLeft') {
+        playerSpeedX = -5;
+      } else if (event.code === 'ArrowRight') {
+        playerSpeedX = 5;
+      } else if (event.code === 'ArrowUp' && onGround) {
+        playerSpeedY = 10;
+        onGround = false;
+      }
+    });
+    
+    document.addEventListener('keyup', event => {
+      if (event.code === 'ArrowLeft' && playerSpeedX < 0) {
+        playerSpeedX = 0;
+      } else if (event.code === 'ArrowRight' && playerSpeedX

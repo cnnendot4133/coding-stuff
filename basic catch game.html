@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Falling Objects Game</title>
+  <style>
+    #player {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 50px;
+      height: 50px;
+      background-color: blue;
+    }
+    
+    .object {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-color: red;
+    }
+  </style>
+</head>
+<body>
+  <div id="player"></div>
+  
+  <script>
+    const player = document.getElementById('player');
+    let playerPos = 0;
+    
+    function movePlayer(direction) {
+      if (direction === 'left') {
+        playerPos -= 10;
+      } else if (direction === 'right') {
+        playerPos += 10;
+      }
+      
+      if (playerPos < 0) {
+        playerPos = 0;
+      } else if (playerPos > window.innerWidth - player.offsetWidth) {
+        playerPos = window.innerWidth - player.offsetWidth;
+      }
+      
+      player.style.left = playerPos + 'px';
+    }
+    
+    document.addEventListener('keydown', event => {
+      if (event.code === 'ArrowLeft') {
+        movePlayer('left');
+      } else if (event.code === 'ArrowRight') {
+        movePlayer('right');
+      }
+    });
+    
+    let score = 0;
+    const scoreDisplay = document.createElement('div');
+    scoreDisplay.style.position = 'absolute';
+    scoreDisplay.style.top = '10px';
+    scoreDisplay.style.right = '10px';
+    scoreDisplay.style.fontFamily = 'Arial';
+    scoreDisplay.style.fontSize = '24px';
+    scoreDisplay.style.color = 'white';
+    scoreDisplay.textContent = `Score: ${score}`;
+    document.body.appendChild(scoreDisplay);
+    
+    function createObject() {
+      const object = document.createElement('div');
+      object.classList.add('object');
+      object.style.left = Math.floor(Math.random() * (window.innerWidth - object.offsetWidth)) + 'px';
+      object.style.top = '-50px';
+      document.body.appendChild(object);
+      
+      function moveObject() {
+        object.style.top = parseInt(object.style.top) + 10 + 'px';
+        
+        if (parseInt(object.style.top) > window.innerHeight - object.offsetHeight) {
+          if (Math.abs(playerPos - parseInt(object.style.left)) < player.offsetWidth) {
+            score += 10;
+            scoreDisplay.textContent = `Score: ${score}`;
+          }
+          
+          object.remove();
+          clearInterval(interval);
+        }
+      }
+      
+      const interval = setInterval(moveObject, 50);
+    }
+    
+    setInterval(createObject, 1000);
+  </script>
+</body>
+</html>

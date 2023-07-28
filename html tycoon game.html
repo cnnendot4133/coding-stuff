@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Idle Tycoon Game</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: sans-serif;
+    }
+    
+    #money {
+      font-size: 36px;
+      font-weight: bold;
+      text-align: right;
+      padding: 10px;
+      background-color: yellow;
+    }
+    
+    #store {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .item {
+      margin: 10px;
+      padding: 10px;
+      width: 200px;
+      background-color: lightgray;
+      text-align: center;
+    }
+    
+    .item:hover {
+      background-color: gray;
+      color: white;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div id="money">Money: $0</div>
+  
+  <div id="store">
+    <div class="item" onclick="buyItem('item1', 10, 1)">Item 1<br>Cost: $10<br>Production: $1/sec</div>
+    <div class="item" onclick="buyItem('item2', 100, 10)">Item 2<br>Cost: $100<br>Production: $10/sec</div>
+    <div class="item" onclick="buyItem('item3', 1000, 100)">Item 3<br>Cost: $1,000<br>Production: $100/sec</div>
+  </div>
+  
+  <script>
+    let money = 0;
+    let production = 0;
+    let items = {};
+    
+    function updateMoney() {
+      const moneyElement = document.getElementById('money');
+      moneyElement.innerHTML = 'Money: $' + money;
+    }
+    
+    function updateProduction() {
+      production = 0;
+      for (const key in items) {
+        production += items[key].production * items[key].count;
+      }
+    }
+    
+    function updateItems() {
+      for (const key in items) {
+        const itemElement = document.getElementById(key);
+        itemElement.innerHTML = key + ': ' + items[key].count + ' x ' + items[key].production + ' = $' + (items[key].count * items[key].production) + '/sec';
+      }
+    }
+    
+    function buyItem(id, cost, production) {
+      if (money >= cost) {
+        money -= cost;
+        items[id] = {
+          count: items[id] ? items[id].count + 1 : 1,
+          production: production
+        };
+        updateMoney();
+        updateProduction();
+        updateItems();
+      }
+    }
+    
+    setInterval(() => {
+      money += production / 10;
+      updateMoney();
+    }, 100);
+  </script>
+</body>
+</html>
